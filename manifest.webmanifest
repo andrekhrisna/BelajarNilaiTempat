@@ -1,0 +1,17 @@
+{
+  "name": "Belajar Angka & Nilai Tempat",
+  "short_name": "Nilai Tempat",
+  "description": "Latihan angka acak, nilai tempat, dan operasi hitung untuk anak Kelas 3 SD di Mawari Banyu Urip 1.",
+  "lang": "id",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F2F5FA",
+  "theme_color": "#1B2A4A",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

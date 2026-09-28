@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B2A4A">
+<meta name="description" content="Latihan angka acak, nilai tempat, dan operasi hitung untuk anak Kelas 3 SD di Mawari Banyu Urip 1.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Belajar Angka & Nilai Tempat – Mawari Banyu Urip 1</title>
+<style>
+:root{
+  --bg:#F2F5FA; --paper:#FFFFFF; --ink:#1B2A4A; --muted:#5B6782; --line:#DCE2EE;
+  --p0:#15894F; --p0-bg:#E3F5EA;   /* satuan, ribuan, jutaan, miliaran */
+  --p1:#2260C9; --p1-bg:#E3ECFB;   /* puluhan */
+  --p2:#C63A2B; --p2-bg:#FBE6E3;   /* ratusan */
+  --gold:#E9A800; --gold-bg:#FFF4D1;
+  --ok:#15894F; --ok-bg:#E3F5EA; --bad:#C63A2B; --bad-bg:#FBE6E3;
+  --r-lg:22px; --r-md:14px;
+  --font:"Nunito","Quicksand","Segoe UI Rounded",ui-rounded,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);-webkit-tap-highlight-color:transparent;padding-bottom:calc(84px + env(safe-area-inset-bottom))}
+button,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--p1);outline-offset:2px}
+[hidden]{display:none!important}
+
+.top{background:var(--ink);color:#fff;padding:18px 18px 20px}
+.brand{display:flex;gap:14px;align-items:center;max-width:720px;margin:0 auto}
+.logo{display:flex;border-radius:12px;overflow:hidden;flex:none}
+.logo span{width:22px;height:40px;display:grid;place-items:center;font-weight:900;font-size:20px;color:#fff}
+.logo .a{background:var(--p2)}.logo .b{background:var(--p1)}.logo .c{background:var(--p0)}
+.top h1{font-size:20px;line-height:1.2;margin:0;font-weight:900}
+.top p{margin:2px 0 0;font-size:13px;opacity:.75}
+
+main{max-width:720px;margin:0 auto;padding:16px}
+.panel,.card{background:var(--paper);border-radius:var(--r-lg);padding:18px;margin-bottom:14px;border:1px solid var(--line)}
+.fld{display:block;margin-bottom:14px}
+.fld>span{display:block;font-size:13px;font-weight:800;color:var(--muted);margin-bottom:6px}
+select{width:100%;padding:12px 14px;border-radius:var(--r-md);border:2px solid var(--line);background:#F8FAFD;font-weight:800;font-size:16px;appearance:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 20px) 55%,calc(100% - 14px) 55%;background-size:6px 6px;background-repeat:no-repeat}
+.grid2{display:grid;grid-template-columns:1fr;gap:0 12px}
+@media (min-width:520px){.grid2{grid-template-columns:1fr 1fr}}
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.seg button{padding:12px 0;border-radius:var(--r-md);border:2px solid var(--line);background:#F8FAFD;font-weight:900;font-size:17px}
+.seg button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:#fff}
+
+.btn{border:0;border-radius:var(--r-md);padding:11px 14px;font-weight:800;font-size:15px;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn.primary{background:var(--ink);color:#fff;width:100%;padding:15px;font-size:17px}
+.btn.primary:active{transform:scale(.98)}
+.btn.line{background:#fff;border:2px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.5}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.tag{font-weight:900;font-size:14px;color:var(--muted)}
+.tier{font-size:12px;font-weight:900;padding:4px 10px;border-radius:99px;margin-left:6px}
+.t0{background:var(--p0-bg);color:var(--p0)}.t1{background:var(--gold-bg);color:#8A6200}.t2{background:var(--p2-bg);color:var(--p2)}
+
+.bignum{font-weight:900;text-align:center;line-height:1.1;padding:18px 0 14px;letter-spacing:.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.bignum .d{transition:color .25s}
+.bignum .sep{color:#A7B0C4}
+.colored .q0{color:var(--p0)}.colored .q1{color:var(--p1)}.colored .q2{color:var(--p2)}
+.expr{font-weight:900;text-align:center;padding:16px 0;line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+
+.pv{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:12px}
+.chip{border-radius:var(--r-md);padding:10px 6px;text-align:center;border:2px solid}
+.chip b{display:block;font-size:26px;line-height:1}
+.chip span{display:block;font-size:12px;font-weight:900;margin-top:4px}
+.chip small{display:block;font-size:11px;opacity:.85;margin-top:2px;overflow-wrap:anywhere}
+.c0{background:var(--p0-bg);color:var(--p0);border-color:#B9E3C9}
+.c1{background:var(--p1-bg);color:var(--p1);border-color:#BDD0F4}
+.c2{background:var(--p2-bg);color:var(--p2);border-color:#F2C2BB}
+
+.feedback{margin-top:12px;border-radius:var(--r-md);padding:12px 14px;font-weight:700;font-size:14px;text-align:center}
+.feedback.ok{background:var(--ok-bg);color:var(--ok)}
+.feedback.bad{background:var(--bad-bg);color:var(--bad)}
+.answer{margin-top:12px;background:var(--ok-bg);color:var(--ok);border-radius:var(--r-md);padding:14px;text-align:center}
+.answer b{display:block;font-size:34px;line-height:1.1;overflow-wrap:anywhere}
+.answer small{display:block;font-weight:700;margin-top:4px}
+.center{text-align:center}
+.mt{margin-top:10px}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-md);padding:10px 4px;text-align:center}
+.stat span{display:block;font-size:12px;font-weight:800;color:var(--muted)}
+.stat b{display:block;font-size:22px}
+.progress{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:4px 0 14px}
+.progress i{display:block;height:100%;background:var(--p0);width:0;transition:width .3s}
+.qtext{font-size:18px;font-weight:800;text-align:center;line-height:1.6}
+.qnum{display:block;width:max-content;max-width:100%;margin:6px auto;font-weight:900;background:var(--p1-bg);color:var(--ink);padding:2px 14px;border-radius:12px;letter-spacing:.02em;white-space:nowrap;line-height:1.3;font-variant-numeric:tabular-nums}
+.qdig{font-size:34px;font-weight:900;color:var(--p2);text-decoration:underline;text-decoration-thickness:4px}
+.qnum u{color:var(--p2);text-decoration-thickness:4px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.opts button{padding:15px 6px;border-radius:var(--r-md);border:2px solid var(--line);background:#F8FAFD;font-weight:900;font-size:16px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.opts button.right{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.opts button.wrong{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.levelup{background:var(--gold-bg);color:#6B4A00;border-radius:var(--r-md);padding:10px;font-weight:900;text-align:center;margin-bottom:12px}
+.summary b.big{font-size:56px;display:block;line-height:1}
+
+nav.tabs{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(3,1fr);padding-bottom:env(safe-area-inset-bottom);z-index:5}
+nav.tabs button{background:none;border:0;padding:10px 4px 12px;font-weight:800;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px;border-top:3px solid transparent}
+nav.tabs button .ic{font-size:20px;font-weight:900;line-height:1}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-top-color:var(--ink)}
+
+
+.steps{margin-top:12px;border:2px solid var(--line);border-radius:var(--r-md);padding:12px}
+.blk-title{font-weight:900;font-size:14px;margin:6px 0 0;color:var(--muted)}
+.sheetwrap{overflow-x:auto;padding:4px 0}
+.sheet{display:grid;justify-content:center;font-weight:900;font-variant-numeric:tabular-nums;margin:6px auto;width:max-content}
+.sheet .cl{text-align:center;line-height:1.35}
+.sheet .sg{text-align:right;padding-right:10px;white-space:nowrap;line-height:1.35}
+.sheet .hd{font-size:10px;text-align:center;align-self:end;padding-bottom:2px}
+.hd.q0{color:var(--p0)}.hd.q1{color:var(--p1)}.hd.q2{color:var(--p2)}
+.sheet .crow{font-size:.5em;letter-spacing:-.02em;line-height:1.3;align-self:end}
+.sheet .cr{color:var(--p2)}
+.sheet .ln{border-top:3px solid var(--ink)}
+.sheet .bar{border-top:3px solid var(--ink)}
+.sheet .barl{border-left:3px solid var(--ink);border-top-left-radius:12px;padding-left:2px}
+.sheet .strike{text-decoration:line-through;text-decoration-color:var(--p2);text-decoration-thickness:3px;color:var(--muted)}
+.sheet .ghost{color:#A7B0C4}
+.sheet .rs{color:var(--ok)}
+.sheet .pp{color:var(--p1)}
+.sheet .hid{visibility:hidden}
+.stxt{margin:8px 0 0;padding-left:22px;font-size:14px;line-height:1.5;font-weight:600}
+.stxt li{margin:4px 0;padding:2px 6px;border-radius:8px}
+.stxt li.hid{display:none}
+.stxt li.now{background:var(--gold-bg)}
+.stepctl{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;margin-top:12px}
+.stepctl .btn{white-space:nowrap}
+.stepctl .lbl{text-align:center;font-weight:800;font-size:13px;color:var(--muted)}
+.kids{padding:14px 16px}
+.kids-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px}
+.kids-top>span{font-size:13px;font-weight:800;color:var(--muted)}
+.btn.small{padding:7px 12px;font-size:14px}
+.kidchips{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.kidchips::-webkit-scrollbar{display:none}
+.kidchip{flex:none;border:2px solid var(--line);background:#F8FAFD;border-radius:99px;padding:9px 16px;font-weight:900;font-size:16px;max-width:60vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kidchip[aria-selected="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.kids-empty{margin:0;font-size:14px;color:var(--muted);font-weight:600;line-height:1.5}
+.kidform{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}
+.kidform input{min-width:0;padding:12px 14px;border-radius:var(--r-md);border:2px solid var(--line);background:#fff;font:inherit;font-weight:800;font-size:16px;color:var(--ink)}
+.kidform input:focus{border-color:var(--p1);outline:none}
+.kidform .btn{padding:12px 18px}
+.kidlist{list-style:none;margin:12px 0 0;padding:0}
+.kidlist li{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 4px 8px 12px;border:1px solid var(--line);border-radius:var(--r-md);margin-bottom:6px;font-weight:800}
+.kidlist li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kidlist .del{background:var(--bad-bg);color:var(--bad);border:0;border-radius:10px;padding:7px 12px;font-weight:800;font-size:14px;flex:none}
+.note{font-size:13px;color:var(--muted);line-height:1.5;margin:8px 0 0}
+.note.warn{color:var(--bad);font-weight:700}
+.kidhead{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;margin:2px 4px 12px}
+.kidhead span{font-size:15px;font-weight:800;color:var(--muted)}
+.kidhead b{font-size:30px;font-weight:900;line-height:1.1;overflow-wrap:anywhere}
+.kidnav{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kidnav .btn{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.appfoot{text-align:center;font-size:12px;color:var(--muted);font-weight:700;margin:4px 0 8px}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:8}
+.pop{animation:pop .25s ease-out}
+@keyframes pop{from{transform:scale(.97);opacity:.4}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.pop{animation:none}.bignum .d{transition:none}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true"><span class="a">3</span><span class="b">2</span><span class="c">1</span></div>
+    <div>
+      <h1>Belajar Angka & Nilai Tempat</h1>
+      <p>Matematika Kelas 3 SD, Mawari Banyu Urip 1</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- DAFTAR ANAK (dipakai tab Angka Acak dan Operasi Hitung) -->
+  <section class="panel kids" id="kids" aria-label="Daftar anak">
+    <div class="kids-top"><span>Anak</span><button class="btn line small" id="kids-edit">Atur nama</button></div>
+    <div class="kidchips" id="kid-chips" role="tablist" aria-label="Pilih anak"></div>
+    <p class="note warn" id="store-note" hidden></p>
+    <div id="kids-editor" hidden>
+      <form class="kidform" id="kid-form" autocomplete="off">
+        <input id="kid-name" maxlength="20" placeholder="Ketik nama anak" aria-label="Nama anak">
+        <button class="btn primary" type="submit" style="width:auto">Tambah</button>
+      </form>
+      <p class="note" id="kid-msg" aria-live="polite"></p>
+      <ul class="kidlist" id="kid-list"></ul>
+      <button class="btn line mt" id="kids-done" style="width:100%">Selesai</button>
+    </div>
+  </section>
+
+  <!-- TAB 1: ANGKA ACAK -->
+  <section id="tab-angka">
+    <div class="panel">
+      <label class="fld"><span>Tingkat nilai tempat</span><select id="num-level"></select></label>
+      <div class="fld"><span>Jumlah angka</span>
+        <div class="seg" id="num-count" role="group" aria-label="Jumlah angka"></div>
+      </div>
+      <button class="btn primary" id="num-go">🎲 Acak angka baru</button>
+    </div>
+    <div id="num-list"></div>
+  </section>
+
+  <!-- TAB 2: OPERASI HITUNG -->
+  <section id="tab-hitung" hidden>
+    <div class="panel">
+      <div class="grid2">
+        <label class="fld"><span>Jenis operasi</span>
+          <select id="m-op">
+            <option value="+">Penjumlahan (+)</option>
+            <option value="-">Pengurangan (−)</option>
+            <option value="x">Perkalian (×)</option>
+            <option value=":">Pembagian (:)</option>
+          </select></label>
+        <label class="fld"><span>Tingkat angka</span><select id="m-level"></select></label>
+        <label class="fld"><span>Kesulitan</span>
+          <select id="m-tier">
+            <option value="auto">Bertahap (makin sulit)</option>
+            <option value="0">Mudah</option>
+            <option value="1">Menengah</option>
+            <option value="2">Menantang</option>
+          </select></label>
+        <label class="fld"><span>Banyak angka</span>
+          <select id="m-k">
+            <option value="2">2 angka (A dan B)</option>
+            <option value="3">3 angka</option>
+            <option value="4">4 angka</option>
+          </select></label>
+      </div>
+      <label class="fld"><span>Jumlah soal</span><select id="m-n"></select></label>
+      <p class="tier-help" id="m-help" style="font-size:13px;color:var(--muted);margin:0 0 14px;line-height:1.5"></p>
+      <button class="btn primary" id="m-go">✏️ Buat soal baru</button>
+    </div>
+    <div id="m-list"></div>
+  </section>
+
+  <!-- TAB 3: KUIS -->
+  <section id="tab-kuis" hidden>
+    <div class="stats">
+      <div class="stat"><span>Skor</span><b id="q-score">0</b></div>
+      <div class="stat"><span>Beruntun</span><b id="q-streak">0</b></div>
+      <div class="stat"><span>Soal</span><b id="q-pos">1/10</b></div>
+      <div class="stat"><span>Level</span><b id="q-lv">1/5</b></div>
+    </div>
+    <div class="progress"><i id="q-bar"></i></div>
+    <div class="panel">
+      <label class="fld" style="margin:0"><span>Level kuis</span>
+        <select id="q-mode">
+          <option value="auto">Otomatis (naik kalau 3 benar berturut-turut)</option>
+          <option value="0">Level 1: ratusan</option>
+          <option value="1">Level 2: ribuan</option>
+          <option value="2">Level 3: puluhan–ratusan ribu</option>
+          <option value="3">Level 4: jutaan–ratusan juta</option>
+          <option value="4">Level 5: miliaran</option>
+        </select></label>
+    </div>
+    <div class="card" id="q-card"></div>
+  </section>
+  <p class="appfoot" id="appfoot">Versi 2026.09.28-1</p>
+</main>
+
+<nav class="tabs" role="tablist">
+  <button role="tab" data-tab="angka" aria-selected="true"><span class="ic">#</span>Angka acak</button>
+  <button role="tab" data-tab="hitung" aria-selected="false"><span class="ic">±</span>Operasi hitung</button>
+  <button role="tab" data-tab="kuis" aria-selected="false"><span class="ic">?</span>Kuis nilai tempat</button>
+</nav>
+<canvas id="confetti"></canvas>
+
+<script>
+/* ===================== LOGIKA MURNI (LOGIC-START) ===================== */
+const R = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
+const sum = a => a.reduce((s, v) => s + v, 0);
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=R(0,i); [arr[i],arr[j]]=[arr[j],arr[i]]; } return arr; }
+
+/* "Kantong kocok": semua isi keluar satu kali sebelum dikocok ulang,
+   dan isi pertama kantong baru tidak sama dengan isi terakhir kantong lama. */
+const bags = {};
+function fromBag(key, items){
+  let b = bags[key];
+  if(!b || !b.list.length){
+    const list = shuffle(items.slice());
+    if(b && list.length > 1 && list[list.length-1] === b.last){
+      [list[0], list[list.length-1]] = [list[list.length-1], list[0]];
+    }
+    b = bags[key] = { list, last: b ? b.last : null };
+  }
+  const v = b.list.pop(); b.last = v; return v;
+}
+const D19 = [1,2,3,4,5,6,7,8,9];
+function randomByDigits(d, bagKey){
+  let n = fromBag(bagKey, D19);
+  for(let i=1;i<d;i++) n = n*10 + R(0,9);
+  return n;
+}
+/* Digit depan dibagi 3 kelompok: rendah (1–3), tengah (4–6), tinggi (7–9).
+   Untuk tiap anak, kelompok diputar per blok 3 angka, jadi dalam 5 angka
+   paling banyak 2 dari kelompok yang sama. Tiap digit tetap muncul merata. */
+function leadDigits(count){
+  const out = []; let blk = [];
+  for(let i=0;i<count;i++){
+    if(!blk.length) blk = shuffle([0,1,2]);
+    const g = blk.pop();
+    out.push(fromBag('lead' + g, [1,2,3].map(x => x + 3 * g)));
+  }
+  return out;
+}
+/* seen dipakai bersama antar anak supaya angka tidak kembar.
+   Kalau pilihan angka habis (mis. satuan hanya 1–9), angka boleh terulang. */
+function numberSet(d, count, seen = new Set()){
+  return leadDigits(count).map(lead => {
+    const g = Math.floor((lead - 1) / 3);
+    let n;
+    for(let t=0;t<300;t++){
+      const L = t === 0 || d > 1 ? lead : fromBag('lead' + g, [1,2,3].map(x => x + 3 * g));
+      n = L;
+      for(let i=1;i<d;i++) n = n * 10 + R(0, 9);
+      if(!seen.has(n)) break;
+    }
+    seen.add(n);
+    return n;
+  });
+}
+
+const PLACE = ["Satuan","Puluhan","Ratusan","Ribuan","Puluhan Ribu","Ratusan Ribu","Jutaan","Puluhan Juta","Ratusan Juta","Miliaran"];
+const fmt = n => n.toLocaleString('id-ID');
+
+function terbilang(n){
+  n = Math.abs(Math.floor(n));
+  if(n === 0) return "nol";
+  const u = ["","satu","dua","tiga","empat","lima","enam","tujuh","delapan","sembilan","sepuluh","sebelas"];
+  const t = x => terbilang(x);
+  if(n < 12) return u[n];
+  if(n < 20) return t(n-10) + " belas";
+  if(n < 100) return t(Math.floor(n/10)) + " puluh" + (n%10 ? " " + t(n%10) : "");
+  if(n < 200) return "seratus" + (n-100 ? " " + t(n-100) : "");
+  if(n < 1000) return t(Math.floor(n/100)) + " ratus" + (n%100 ? " " + t(n%100) : "");
+  if(n < 2000) return "seribu" + (n-1000 ? " " + t(n-1000) : "");
+  if(n < 1e6) return t(Math.floor(n/1000)) + " ribu" + (n%1000 ? " " + t(n%1000) : "");
+  if(n < 1e9) return t(Math.floor(n/1e6)) + " juta" + (n%1e6 ? " " + t(n%1e6) : "");
+  if(n < 1e12) return t(Math.floor(n/1e9)) + " miliar" + (n%1e9 ? " " + t(n%1e9) : "");
+  return String(n);
+}
+
+/* ---- Pengukur kesulitan ---- */
+function carriesAdd(nums){
+  let c = 0, cnt = 0, rest = nums.slice();
+  while(rest.some(v => v > 0) || c > 0){
+    const s = c + sum(rest.map(v => v % 10));
+    c = Math.floor(s / 10); if(c > 0) cnt++;
+    rest = rest.map(v => Math.floor(v / 10));
+  }
+  return cnt;
+}
+function borrows2(a, b){
+  let br = 0, cnt = 0;
+  while(a > 0 || b > 0){
+    const da = a % 10 - br, db = b % 10;
+    if(da < db){ br = 1; cnt++; } else br = 0;
+    a = Math.floor(a / 10); b = Math.floor(b / 10);
+  }
+  return cnt;
+}
+function borrowsSub(nums){
+  let a = nums[0], cnt = 0;
+  for(let i=1;i<nums.length;i++){ cnt += borrows2(a, nums[i]); a -= nums[i]; }
+  return cnt;
+}
+function carriesMul(A, b){
+  let c = 0, cnt = 0;
+  while(A > 0){ const t = (A % 10) * b + c; c = Math.floor(t / 10); if(c > 0) cnt++; A = Math.floor(A / 10); }
+  return cnt;
+}
+function evalLTR(nums, op){
+  let r = nums[0];
+  for(let i=1;i<nums.length;i++){
+    const v = nums[i];
+    if(op==='+') r += v; else if(op==='-') r -= v; else if(op==='x') r *= v; else r /= v;
+  }
+  return r;
+}
+function search(cand, tierOf, target, tries = 6000){
+  let best = null, bestGap = 99;
+  for(let i=0;i<tries;i++){
+    const c = cand(), g = Math.abs(tierOf(c) - target);
+    if(g === 0) return c;
+    if(g < bestGap){ best = c; bestGap = g; }
+  }
+  return best;
+}
+/* Susun digit per kolom. caps[col] = batas jumlah digit kolom itu (min, max). */
+function colBuild(leadMins, d, colRange){
+  const k = leadMins.length, nums = Array(k).fill(0);
+  let carry = 0;
+  for(let col=0; col<d; col++){
+    const mins = col === d-1 ? leadMins : Array(k).fill(0);
+    const [lo, hi] = colRange(col, carry);
+    let digits = null;
+    for(let t=0;t<400 && !digits;t++){
+      const ds = mins.map(m => R(m, 9));
+      const s = sum(ds);
+      if(s >= lo && s <= hi) digits = ds;
+    }
+    if(!digits) return null;
+    digits.forEach((v, i) => nums[i] += v * 10 ** col);
+    carry = Math.floor((sum(digits) + carry) / 10);
+  }
+  return nums;
+}
+/* Tanpa menyimpan: tiap kolom jumlah digitnya <= 9 */
+function noCarry(leadMins, d){
+  const mins = d === 1 ? leadMins.map(m => Math.max(m, 1)) : leadMins;
+  return colBuild(mins, d, () => [0, 9]) || noCarry(leadMins, d);
+}
+/* Tepat satu kali menyimpan (di kolom p) */
+function oneCarry(leadMins, d){
+  for(let t=0;t<50;t++){
+    const p = R(0, d-1);
+    const r = colBuild(leadMins, d, (col, carry) => col === p ? [10, 99] : [0, 9 - carry]);
+    if(r) return r;
+  }
+  return null;
+}
+
+function genAdd(k, d, min, max, tier){
+  if(tier === 0) return noCarry(Array(k).fill(1), d);
+  if(tier === 1 && d >= 2){ const r = oneCarry(Array(k).fill(1), d); if(r && carriesAdd(r) === 1) return r; }
+  const tf = d === 1
+    ? n => { const s = sum(n); return s <= 9 ? 0 : s <= 14 ? 1 : 2; }
+    : n => Math.min(2, carriesAdd(n));
+  return search(() => Array.from({length:k}, () => R(min, max)), tf, tier);
+}
+function randSub(k, min, max){
+  const a = R(Math.max(min, (k-1) * min), max);
+  let rem = a; const bs = [];
+  for(let i=0;i<k-1;i++){
+    const left = k - 2 - i;
+    const b = R(min, Math.min(max, rem - left * min));
+    bs.push(b); rem -= b;
+  }
+  return [a, ...shuffle(bs)];
+}
+function genSub(k, d, min, max, tier){
+  if(d >= 2 && tier === 0){
+    for(let t=0;t<30;t++){
+      const parts = noCarry([...Array(k-1).fill(1), 0], d);
+      if(parts[k-1] > 0) return [sum(parts), ...parts.slice(0, k-1)];
+    }
+  }
+  let tf;
+  if(d === 1) tf = n => { const a = n[0], r = evalLTR(n,'-'); return a <= 5 ? 0 : (a >= 8 && r <= 2) ? 2 : 1; };
+  else if(d === 2 && k === 2) tf = n => { const b = borrowsSub(n); return b === 0 ? 0 : evalLTR(n,'-') < 20 ? 2 : 1; };
+  else tf = n => Math.min(2, borrowsSub(n));
+  const fromCarry = () => {                      // a = b1 + ... + hasil, dengan 1 kali menyimpan
+    const parts = oneCarry([...Array(k-1).fill(1), 0], d);
+    return parts && sum(parts) <= max ? [sum(parts), ...parts.slice(0, k-1)] : randSub(k, min, max);
+  };
+  return search(() => (tier === 1 && Math.random() < .5) ? fromCarry() : randSub(k, min, max), tf, tier);
+}
+function digitsNum(d, capFn){
+  let n = 0;
+  for(let j=0;j<d;j++){ const lo = j === d-1 ? 1 : 0; n += R(lo, capFn(j)) * 10 ** j; }
+  return n;
+}
+function oneCarryMul(d, min, max){
+  for(let t=0;t<300;t++){
+    const b = R(2,9), p = R(0, d-1), ds = [];
+    let ok = true;
+    for(let j=0;j<d;j++){
+      let lo = 0, hi;
+      if(j === p){ lo = Math.ceil(10 / b); hi = 9; }
+      else if(j === p+1){ hi = Math.floor((9 - Math.floor(ds[p] * b / 10)) / b); }
+      else hi = Math.floor(9 / b);
+      if(j === d-1) lo = Math.max(lo, 1);
+      if(lo > hi){ ok = false; break; }
+      ds.push(R(lo, hi));
+    }
+    if(!ok) continue;
+    const A = ds.reduce((s, v, j) => s + v * 10 ** j, 0);
+    if(carriesMul(A, b) === 1) return [A, b];
+  }
+  return [R(min, max), R(2, 9)];
+}
+function genMul(k, d, min, max, tier){
+  let A, b;
+  if(d === 1){
+    if(tier === 0){ A = R(2,5); b = R(2,5); }
+    else if(tier === 1){ const big = R(6,9), small = R(2,5); [A, b] = Math.random() < .5 ? [big, small] : [small, big]; }
+    else { A = R(6,9); b = R(6,9); }
+  } else if(tier === 0){ b = R(2,5); A = digitsNum(d, () => Math.floor(9 / b)); }
+  else if(tier === 1){ [A, b] = oneCarryMul(d, min, max); }
+  else { A = R(min, max); do { b = R(11, 99); } while(b % 10 === 0); }
+  const nums = [A, b];
+  for(let i=2;i<k;i++) nums.push(R(2, [3,5,9][tier]));
+  return nums;
+}
+function genDiv(k, d, min, max, tier){
+  if(tier === 0 && d >= 2 && k === 2){
+    const b = R(2,5);
+    const q = digitsNum(d, () => Math.floor(9 / b));
+    return [q * b, b];
+  }
+  const bRange = d === 1 ? [[2,2],[3,4],[5,9]][tier]
+                         : [[2,5],[6,9],[11, Math.min(99, Math.floor(max / 2))]][tier];
+  for(let useExtras = k > 2; ; useExtras = false){
+    for(let t=0;t<200;t++){
+      const b = R(bRange[0], bRange[1]);
+      const extras = useExtras ? Array.from({length:k-2}, () => R(2, [2,3,5][tier])) : [];
+      const D = b * (extras.length ? extras.reduce((p, v) => p * v, 1) : 1);
+      const qlo = Math.ceil(min / D), qhi = Math.floor(max / D);
+      if(qlo <= qhi){ const q = R(Math.max(qlo, 1), qhi); if(q * D >= min) return [q * D, b, ...extras]; }
+    }
+    if(!useExtras) return [2 * R(1,4), 2];
+  }
+}
+function makeProblem(op, d, k, tier){
+  const min = d === 1 ? 1 : 10 ** (d-1), max = 10 ** d - 1;
+  const g = {'+':genAdd, '-':genSub, 'x':genMul, ':':genDiv}[op];
+  const nums = g(k, d, min, max, tier);
+  return { nums, op, tier, result: evalLTR(nums, op) };
+}
+function tierForIndex(i, n){ return Math.min(2, Math.floor(i * 3 / n)); }
+
+/* ---- Kuis ---- */
+const QUIZ = [
+  { name:'Ratusan',              dMin:3,  dMax:3,  zero:false, valueQ:0   },
+  { name:'Ribuan',               dMin:4,  dMax:4,  zero:false, valueQ:0   },
+  { name:'Puluhan–ratusan ribu', dMin:5,  dMax:6,  zero:true,  valueQ:0.4 },
+  { name:'Jutaan–ratusan juta',  dMin:7,  dMax:9,  zero:true,  valueQ:0.4 },
+  { name:'Miliaran',             dMin:10, dMax:10, zero:true,  valueQ:0.4 }
+];
+/* Pengecoh: posisi tetangga (±1) dan posisi dengan nama mirip (±3, mis. Ratusan vs Ratusan Ribu) */
+function quizPositions(p, d){
+  const near = shuffle([p-1, p+1, p-3, p+3].filter(x => x >= 0 && x < d));
+  const rest = shuffle([...Array(d).keys()].filter(x => x !== p && !near.includes(x)));
+  return [p, ...near, ...rest].slice(0, Math.min(4, d)).sort((a, b) => a - b);
+}
+function makeQuiz(tier){
+  const cfg = QUIZ[tier];
+  const p = fromBag('qpos' + tier, [...Array(cfg.dMax).keys()]);   // posisi nilai tempat (0 = satuan), merata
+  const d = R(Math.max(cfg.dMin, p + 1), cfg.dMax);                  // panjang angka yang memuat posisi itu
+  const valueQ = Math.random() < cfg.valueQ;
+  for(let t=0;t<2000;t++){
+    const n = randomByDigits(d, 'q' + d);
+    const s = String(n), idx = s.length - 1 - p, dig = s[idx];
+    if(s.split(dig).length - 1 !== 1) continue;             // digit harus unik -> tidak ambigu
+    if(dig === '0' && (!cfg.zero || valueQ)) continue;
+    const pos = quizPositions(p, d);
+    if(valueQ){
+      return { type:'value', n, idx, dig, p, correct: fmt(Number(dig) * 10 ** p),
+               options: pos.map(x => fmt(Number(dig) * 10 ** x)) };
+    }
+    return { type:'place', n, idx, dig, p, correct: PLACE[p], options: pos.map(x => PLACE[x]) };
+  }
+  return makeQuiz(tier);
+}
+/* ---- Langkah pengerjaan bersusun ---- */
+const STEP_SIGN = {'+':'+','-':'−','x':'×',':':':'};
+const ABBR = ['S','P','R','Rb','PRb','RRb','J','PJ','RJ','M','PM','RM'];
+const lenN = n => String(n).length;
+const digitAt = (n, c) => Math.floor(n / 10 ** c) % 10;
+const low = c => (PLACE[c] || '').toLowerCase();
+function mkSheet(w, div){ return { w, div: !!div, rows: [] }; }
+function addRow(sh, o = {}){
+  const r = { sign:o.sign || '', signS:o.signS || 0, rowS:o.rowS || 0, cells:{}, line:!!o.line, lineRange:o.lineRange || null, kind:o.kind || 'num', bar:!!o.bar };
+  sh.rows.push(r); return r;
+}
+function put(r, col, t, s = 0, cls = '', strikeS = 0){ r.cells[col] = { t:String(t), s, cls, strikeS }; }
+function putNum(r, n, s = 0, end = 0, cls = ''){ [...String(n)].reverse().forEach((ch, j) => put(r, end + j, ch, s, cls)); }
+
+function stepsAdd(nums, s0){
+  const res = sum(nums), cols = Math.max(...nums.map(lenN)), w = Math.max(lenN(res), cols);
+  const sh = mkSheet(w), steps = [];
+  const carryRow = addRow(sh, {kind:'carry'});
+  nums.forEach((n, i) => putNum(addRow(sh, {sign: i === nums.length-1 ? '+' : ''}), n));
+  const out = addRow(sh, {line:true, rowS:s0+1});
+  let carry = 0, s = s0;
+  for(let c=0;c<cols;c++){
+    s++;
+    const ds = nums.filter(n => lenN(n) > c).map(n => digitAt(n, c));
+    const tot = carry + sum(ds);
+    const parts = (carry ? [`simpanan ${carry}`] : []).concat(ds).join(' + ');
+    if(c === cols-1){
+      putNum(out, tot, s, c, 'rs');
+      steps.push({s, text:`${PLACE[c]}: ${parts} = ${tot}. Tulis ${tot}.`});
+    } else {
+      put(out, c, tot % 10, s, 'rs');
+      const nc = Math.floor(tot / 10);
+      if(nc) put(carryRow, c+1, nc, s, 'cr');
+      steps.push({s, text:`${PLACE[c]}: ${parts} = ${tot}. Tulis ${tot % 10}${nc ? `, simpan ${nc} ke ${low(c+1)}` : ''}.`});
+      carry = nc;
+    }
+  }
+  return { sheet:sh, steps, end:s, result:res };
+}
+
+function stepsSub2(a, b, s0){
+  const res = a - b, w = lenN(a), lb = lenN(b);
+  const sh = mkSheet(w), steps = [];
+  const mark = addRow(sh, {kind:'carry'});
+  const top = addRow(sh); putNum(top, a);
+  putNum(addRow(sh, {sign:'−'}), b);
+  const out = addRow(sh, {line:true, rowS:s0+1});
+  let br = 0, s = s0;
+  for(let c=0;c<w;c++){
+    s++;
+    const orig = digitAt(a, c), db = c < lb ? digitAt(b, c) : 0;
+    let da = orig - br, txt = `${PLACE[c]}: `, nb = 0;
+    if(br && orig === 0 && c < w-1){
+      txt += `0 tidak bisa langsung dipinjam, jadi pinjam dulu 1 dari ${low(c+1)}: 0 menjadi 10, lalu dipinjam 1, jadi 9. `;
+      da = 9; nb = 1;
+    } else if(br) txt += `${orig} sudah dipinjam 1, jadi ${da}. `;
+    if(!nb && da < db){ txt += `${da} kurang dari ${db}, pinjam 1 dari ${low(c+1)}, jadi ${da + 10}. `; da += 10; nb = 1; }
+    if(da !== orig){ put(mark, c, da, s, 'cr'); top.cells[c].strikeS = s; }
+    const d = da - db;
+    const leadingZero = c > 0 && res < 10 ** c;
+    if(c < lb || nb) txt += `${da} − ${db} = ${d}`;
+    else txt += `tidak ada yang dikurangi, hasilnya ${d}`;
+    if(leadingZero) txt += ' (angka 0 paling depan tidak ditulis).';
+    else { put(out, c, d, s, 'rs'); txt += `. Tulis ${d}.`; }
+    steps.push({s, text:txt});
+    br = nb;
+  }
+  return { sheet:sh, steps, end:s, result:res };
+}
+
+function stepsMul1(A, b, s0){
+  const res = A * b, la = lenN(A), w = Math.max(lenN(res), la, lenN(b));
+  const sh = mkSheet(w), steps = [];
+  const carryRow = addRow(sh, {kind:'carry'});
+  putNum(addRow(sh), A);
+  putNum(addRow(sh, {sign:'×'}), b);
+  const out = addRow(sh, {line:true, rowS:s0+1});
+  let carry = 0, s = s0;
+  for(let c=0;c<la;c++){
+    s++;
+    const d = digitAt(A, c), t = d * b + carry;
+    let txt = `${PLACE[c]}: ${d} × ${b} = ${d * b}` + (carry ? `, ditambah simpanan ${carry} = ${t}` : '');
+    if(c === la-1){ putNum(out, t, s, c, 'rs'); txt += `. Tulis ${t}.`; }
+    else {
+      put(out, c, t % 10, s, 'rs');
+      const nc = Math.floor(t / 10);
+      if(nc) put(carryRow, c+1, nc, s, 'cr');
+      txt += `. Tulis ${t % 10}${nc ? `, simpan ${nc}` : ''}.`;
+      carry = nc;
+    }
+    steps.push({s, text:txt});
+  }
+  return { sheet:sh, steps, end:s, result:res };
+}
+
+function stepsMul2(A, b, s0){
+  const u = b % 10, tt = Math.floor(b / 10), p1 = A * u, p2 = A * tt * 10, res = A * b;
+  const w = Math.max(lenN(res), lenN(A), lenN(p2));
+  const sh = mkSheet(w);
+  putNum(addRow(sh), A);
+  putNum(addRow(sh, {sign:'×'}), b);
+  putNum(addRow(sh, {line:true, rowS:s0+1}), p1, s0+1, 0, 'pp');
+  const r2 = addRow(sh, {sign:'+', signS:s0+2, rowS:s0+2});
+  putNum(r2, A * tt, s0+2, 1, 'pp'); put(r2, 0, '0', s0+2, 'ghost');
+  putNum(addRow(sh, {line:true, rowS:s0+3}), res, s0+3, 0, 'rs');
+  const steps = [
+    {s:s0+1, text:`Kalikan dengan angka satuan: ${fmt(A)} × ${u} = ${fmt(p1)}.`},
+    {s:s0+2, text:`Kalikan dengan angka puluhan: ${fmt(A)} × ${tt} = ${fmt(A * tt)}. Tulis bergeser satu kolom ke kiri (sama dengan × ${tt}0 = ${fmt(p2)}).`},
+    {s:s0+3, text:`Jumlahkan: ${fmt(p1)} + ${fmt(p2)} = ${fmt(res)}.`}
+  ];
+  return { sheet:sh, steps, end:s0+3, result:res };
+}
+
+function stepsDiv(A, b, s0){
+  const ds = [...String(A)].map(Number), n = ds.length;
+  const sh = mkSheet(n, true), steps = [];
+  const qRow = addRow(sh);
+  putNum(addRow(sh, {sign:`${b} )`, bar:true}), A);
+  let cur = 0, started = false, s = s0, lineRange = null, lastCol = n-1;
+  for(let i=0;i<n;i++){
+    const col = n-1-i;
+    cur = cur * 10 + ds[i];
+    if(!started && cur < b) continue;
+    const first = !started; started = true;
+    s++;
+    const q = Math.floor(cur / b);
+    put(qRow, col, q, s, 'rs');
+    let txt = first ? `Ambil ${cur}. ` : `Turunkan ${ds[i]}, jadi ${cur}. `;
+    if(q === 0){
+      steps.push({s, text: txt + `${cur} : ${b} = 0. Tulis 0 di hasil.`});
+      continue;
+    }
+    if(!first){
+      putNum(addRow(sh, {line:!!lineRange, lineRange, rowS:s}), cur, s, col);
+    }
+    const prod = q * b, rem = cur - prod;
+    putNum(addRow(sh, {sign:'−', signS:s, rowS:s}), prod, s, col);
+    lineRange = [col, col + lenN(cur) - 1];
+    txt += `${cur} : ${b} = ${q}. Lalu ${q} × ${b} = ${prod}, dan ${cur} − ${prod} = ${rem}.`;
+    steps.push({s, text:txt});
+    cur = rem; lastCol = col;
+  }
+  s++;
+  const fin = addRow(sh, {line:true, lineRange:[0, lineRange[1]], rowS:s});
+  putNum(fin, cur, s, 0);
+  const Q = A / b;
+  steps.push({s, text:`Sisa ${cur}. Jadi ${fmt(A)} : ${b} = ${fmt(Q)}.`});
+  return { sheet:sh, steps, end:s, result:Q };
+}
+
+function buildSteps(p){
+  const blocks = []; let s = 0;
+  const push = (title, b) => { blocks.push({ title, ...b }); s = b.end; };
+  if(p.op === '+') push(null, stepsAdd(p.nums, 0));
+  else {
+    let acc = p.nums[0];
+    for(let i=1;i<p.nums.length;i++){
+      const v = p.nums[i]; let b;
+      if(p.op === '-') b = stepsSub2(acc, v, s);
+      else if(p.op === 'x') b = v >= 10 ? stepsMul2(acc, v, s) : stepsMul1(acc, v, s);
+      else b = stepsDiv(acc, v, s);
+      push(p.nums.length > 2 ? `Tahap ${i}: ${fmt(acc)} ${STEP_SIGN[p.op]} ${fmt(v)}` : null, b);
+      acc = b.result;
+    }
+  }
+  return { blocks, total:s };
+}
+/* ===================== LOGIC-END ===================== */
+
+/* ===================== ANTARMUKA ===================== */
+const $ = s => document.querySelector(s);
+const NUM_LEVELS = [
+  ['Satuan (1–9)',1],['Puluhan (10–99)',2],['Ratusan (100–999)',3],['Ribuan (1.000–9.999)',4],
+  ['Puluhan ribu (5 angka)',5],['Ratusan ribu (6 angka)',6],['Jutaan (7 angka)',7],
+  ['Puluhan juta (8 angka)',8],['Ratusan juta (9 angka)',9],['Miliaran (10 angka)',10]
+];
+const MATH_LEVELS = [
+  ['Satuan (1–9)',1],['Puluhan (10–99)',2],['Ratusan (100–999)',3],['Ribuan (1.000–9.999)',4],
+  ['Puluhan ribu (5 angka)',5],['Ratusan ribu (6 angka)',6],['Jutaan (7 angka)',7]
+];
+const TIER_NAME = ['Mudah','Menengah','Menantang'];
+const OP_SIGN = {'+':'+','-':'−','x':'×',':':':'};
+const HELP = {
+  '+':'Mudah: tanpa menyimpan. Menengah: menyimpan 1 kali. Menantang: menyimpan 2 kali atau lebih.',
+  '-':'Mudah: tanpa meminjam. Menengah: meminjam 1 kali. Menantang: meminjam 2 kali atau lebih (khusus puluhan: meminjam dengan hasil di bawah 20). Hasil tidak pernah negatif.',
+  'x':'Tingkat angka berlaku untuk angka pertama. Mudah: dikali 2–5 tanpa menyimpan. Menengah: dikali 2–9, menyimpan 1 kali. Menantang: dikali bilangan 2 angka (11–99).',
+  ':':'Tingkat angka berlaku untuk angka yang dibagi. Selalu habis dibagi. Mudah: dibagi 2–5, tiap langkah habis. Menengah: dibagi 6–9. Menantang: dibagi bilangan 2 angka.'
+};
+
+function fitSize(len, maxPx, minPx = 26){ return Math.max(minPx, Math.min(maxPx, Math.floor(Math.min(window.innerWidth - 72, 640) / (len * 0.66)))); }
+function numHTML(n){
+  const s = String(n); let h = '';
+  for(let i=0;i<s.length;i++){
+    const p = s.length - 1 - i;
+    h += `<span class="d q${p % 3}">${s[i]}</span>`;
+    if(p > 0 && p % 3 === 0) h += '<span class="sep">.</span>';
+  }
+  return h;
+}
+function chipsHTML(n){
+  const s = String(n);
+  return [...s].map((dg, i) => {
+    const p = s.length - 1 - i;
+    return `<div class="chip c${p % 3}"><b>${dg}</b><span>${PLACE[p]}</span><small>${fmt(Number(dg) * 10 ** p)}</small></div>`;
+  }).join('');
+}
+
+/* Konfeti sederhana (tanpa library) */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function confetti(){
+  if(reduceMotion) return;
+  const cv = $('#confetti'), ctx = cv.getContext('2d');
+  cv.width = innerWidth; cv.height = innerHeight;
+  const cols = ['#15894F','#2260C9','#C63A2B','#E9A800'];
+  const ps = Array.from({length:70}, () => ({x:cv.width/2, y:cv.height*0.55, vx:(Math.random()-.5)*12, vy:-Math.random()*13-4, s:R(5,9), c:cols[R(0,3)], r:Math.random()*6}));
+  let f = 0;
+  (function tick(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ps.forEach(p => { p.vy += .45; p.x += p.vx; p.y += p.vy; p.r += .2;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s*.6); ctx.restore(); });
+    if(++f < 80) requestAnimationFrame(tick); else ctx.clearRect(0,0,cv.width,cv.height);
+  })();
+}
+
+/* Tab */
+document.querySelectorAll('nav.tabs button').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b === btn));
+  ['angka','hitung','kuis'].forEach(t => $('#tab-' + t).hidden = t !== btn.dataset.tab);
+  $('#kids').hidden = btn.dataset.tab === 'kuis';
+  window.scrollTo(0, 0);
+}));
+
+/* ---------- Penyimpanan di HP ---------- */
+const STORE_KEY = 'mawari-nilai-tempat-v1';
+const storageOK = (() => {
+  try { localStorage.setItem('__uji', '1'); const ok = localStorage.getItem('__uji') === '1'; localStorage.removeItem('__uji'); return ok; }
+  catch(e){ return false; }
+})();
+const today = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
+let saved = null;
+if(storageOK){ try { saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null'); } catch(e){ saved = null; } }
+const st = {
+  kids: saved && Array.isArray(saved.kids) ? saved.kids.filter(k => k && typeof k.id === 'string' && typeof k.name === 'string') : [],
+  cur: saved && typeof saved.cur === 'string' ? saved.cur : null,
+  nextId: saved && Number.isInteger(saved.nextId) ? saved.nextId : 1,
+  // soal/angka hanya dipulihkan kalau dibuat hari ini
+  sets: saved && saved.day === today() && saved.sets && saved.sets.num && saved.sets.math ? saved.sets : { num:{}, math:{} }
+};
+let saveFailed = false;
+function save(){
+  if(!storageOK) return;
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({ kids: st.kids, cur: st.cur, nextId: st.nextId, day: today(), sets: st.sets, settings: readSettings() }));
+    saveFailed = false;
+  } catch(e){ saveFailed = true; }
+}
+const SETTING_IDS = ['num-level','m-op','m-level','m-tier','m-k','m-n'];
+function readSettings(){
+  const o = { numCount };
+  SETTING_IDS.forEach(id => o[id] = $('#' + id).value);
+  return o;
+}
+function applySettings(o){
+  if(!o) return;
+  SETTING_IDS.forEach(id => {
+    const el = $('#' + id);
+    if(o[id] != null && [...el.options].some(x => x.value === String(o[id]))) el.value = String(o[id]);
+  });
+  if(Number.isInteger(o.numCount) && o.numCount >= 1 && o.numCount <= 5) setCount(o.numCount);
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* ---------- Daftar anak ---------- */
+const NO_KID = '_';                     // dipakai kalau belum ada nama anak
+const MAX_KIDS = 12;
+const ids = () => st.kids.length ? st.kids.map(k => k.id) : [NO_KID];
+function curId(){
+  if(!st.kids.length) return NO_KID;
+  return st.kids.some(k => k.id === st.cur) ? st.cur : st.kids[0].id;
+}
+const curKid = () => st.kids.find(k => k.id === curId()) || null;
+function selectKid(id){
+  if(!st.kids.some(k => k.id === id)) return;
+  st.cur = id; save();
+  renderKids(); renderNumbers(); renderMath();
+  // langsung tampilkan bagian soal anak ini, supaya HP bisa langsung ditunjukkan
+  const list = !$('#tab-angka').hidden ? '#num-list' : '#m-list';
+  const head = $(list + ' .kidhead');
+  if(head) window.scrollTo(0, head.getBoundingClientRect().top + window.scrollY - 12);
+}
+function renderKids(){
+  const chips = $('#kid-chips');
+  if(!st.kids.length){
+    chips.innerHTML = `<p class="kids-empty">Belum ada nama. Soal dibuat untuk satu kelompok. Tekan “Atur nama” untuk menambah anak.</p>`;
+  } else {
+    const c = curId();
+    chips.innerHTML = st.kids.map(k => `<button class="kidchip" role="tab" data-kid="${k.id}" aria-selected="${k.id === c}">${esc(k.name)}</button>`).join('');
+    const sel = chips.querySelector('[aria-selected="true"]');
+    if(sel) chips.scrollLeft = Math.max(0, sel.offsetLeft - chips.clientWidth / 2 + sel.offsetWidth / 2);
+  }
+  $('#kid-list').innerHTML = st.kids.map(k => `<li><span>${esc(k.name)}</span><button class="del" data-del="${k.id}" aria-label="Hapus ${esc(k.name)}">Hapus</button></li>`).join('');
+  const n = st.kids.length;
+  $('#num-go').textContent = n > 1 ? `🎲 Acak angka (${n} anak)` : '🎲 Acak angka baru';
+  $('#m-go').textContent = n > 1 ? `✏️ Buat soal (${n} anak)` : '✏️ Buat soal baru';
+  const sn = $('#store-note');
+  sn.textContent = !storageOK ? 'Nama tidak bisa disimpan dengan cara membuka file ini, jadi perlu diketik ulang setiap aplikasi dibuka.'
+                 : saveFailed ? 'Gagal menyimpan ke HP.' : '';
+  sn.hidden = !n || !sn.textContent;
+}
+function kidMsg(text){ $('#kid-msg').textContent = text; }
+function openEditor(open){
+  $('#kids-editor').hidden = !open;
+  $('#kids-edit').hidden = open;
+  kidMsg('');
+  renderKids();
+  if(open) setTimeout(() => $('#kid-name').focus(), 50);
+}
+$('#kids-edit').onclick = () => openEditor(true);
+$('#kids-done').onclick = () => openEditor(false);
+$('#kid-form').addEventListener('submit', e => {
+  e.preventDefault();
+  const input = $('#kid-name'), name = input.value.replace(/\s+/g, ' ').trim();
+  if(!name){ kidMsg('Ketik nama anak dulu.'); return; }
+  if(st.kids.length >= MAX_KIDS){ kidMsg(`Maksimal ${MAX_KIDS} anak.`); return; }
+  if(st.kids.some(k => k.name.toLowerCase() === name.toLowerCase())){ kidMsg(`Nama “${name}” sudah ada.`); return; }
+  const wasEmpty = !st.kids.length;
+  const id = 'k' + st.nextId++;
+  st.kids.push({ id, name });
+  if(wasEmpty){ delete st.sets.num[NO_KID]; delete st.sets.math[NO_KID]; st.cur = id; }
+  input.value = '';
+  genNumbersFor([id], false); genMathFor([id], false);   // hanya anak baru; soal anak lain tidak berubah
+  save(); renderKids(); renderNumbers(); renderMath();
+  kidMsg(`${name} ditambahkan.`);
+  input.focus();
+});
+$('#kid-list').addEventListener('click', e => {
+  const b = e.target.closest('[data-del]'); if(!b) return;
+  const k = st.kids.find(x => x.id === b.dataset.del); if(!k) return;
+  st.kids = st.kids.filter(x => x.id !== k.id);
+  delete st.sets.num[k.id]; delete st.sets.math[k.id];
+  if(!st.kids.length){ genNumbersFor([NO_KID], false); genMathFor([NO_KID], false); }
+  save(); renderKids(); renderNumbers(); renderMath();
+  kidMsg(`${k.name} dihapus.`);
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-kid]');
+  if(b) selectKid(b.dataset.kid);
+});
+function kidHeadHTML(word){
+  const k = curKid();
+  return k ? `<div class="kidhead"><span>${word} untuk</span><b>${esc(k.name)}</b></div>` : '';
+}
+function kidNavHTML(){
+  if(st.kids.length < 2) return '';
+  const i = st.kids.findIndex(k => k.id === curId());
+  const prev = st.kids[i - 1], next = st.kids[i + 1];
+  return `<div class="kidnav">
+    ${prev ? `<button class="btn line" data-kid="${prev.id}">◀ ${esc(prev.name)}</button>` : '<span></span>'}
+    ${next ? `<button class="btn primary" data-kid="${next.id}" style="padding:11px 14px;font-size:15px">${esc(next.name)} ▶</button>` : '<span></span>'}
+  </div>`;
+}
+
+/* ---------- Tab 1: Angka acak ---------- */
+const numLevel = $('#num-level');
+NUM_LEVELS.forEach(([label, d]) => numLevel.add(new Option(label, d, false, d === 4)));
+let numCount = 1, numbers = [];
+const segBox = $('#num-count');
+function setCount(c){
+  numCount = c;
+  segBox.querySelectorAll('button').forEach((x, j) => x.setAttribute('aria-pressed', j + 1 === c));
+}
+for(let i=1;i<=5;i++){
+  const b = document.createElement('button');
+  b.textContent = i; b.setAttribute('aria-pressed', i === 1);
+  b.onclick = () => { setCount(i); genNumbersFor(ids(), true); };
+  segBox.appendChild(b);
+}
+/* Buat angka untuk anak-anak di `list`. Angka tidak kembar dengan anak lain. */
+function genNumbersFor(list, andRender){
+  const d = Number(numLevel.value), seen = new Set();
+  if(list.length === ids().length) st.sets.num = {};
+  Object.values(st.sets.num).forEach(arr => arr.forEach(n => seen.add(n)));
+  list.forEach(id => st.sets.num[id] = numberSet(d, numCount, seen));
+  if(andRender){ save(); renderNumbers(); }
+}
+function renderNumbers(){
+  numbers = st.sets.num[curId()] || [];
+  $('#num-list').innerHTML = kidHeadHTML('Angka') + numbers.map((n, i) => `
+    <article class="card pop" data-i="${i}">
+      <div class="card-head">
+        <span class="tag">Angka ${i+1}</span>
+      </div>
+      <div class="bignum" style="font-size:${fitSize(fmt(n).length, 96)}px">${numHTML(n)}</div>
+      <div class="center mt"><button class="btn line" data-act="pv">Tampilkan nilai tempat</button></div>
+      <div class="pvwrap" hidden>
+        <div class="pv">${chipsHTML(n)}</div>
+      </div>
+    </article>`).join('') + kidNavHTML();
+}
+$('#num-go').onclick = () => genNumbersFor(ids(), true);
+numLevel.onchange = () => genNumbersFor(ids(), true);
+$('#num-list').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-act]'); if(!btn) return;
+  const card = btn.closest('article');
+  if(btn.dataset.act === 'pv'){
+    const w = card.querySelector('.pvwrap'), show = w.hidden;
+    w.hidden = !show;
+    card.querySelector('.bignum').classList.toggle('colored', show);
+    btn.textContent = show ? 'Sembunyikan nilai tempat' : 'Tampilkan nilai tempat';
+  }
+});
+
+/* ---------- Tampilan langkah pengerjaan ---------- */
+function sheetHTML(sh){
+  const w = sh.w, fs = Math.max(16, Math.min(28, Math.floor((Math.min(window.innerWidth, 680) - 110) / ((w + 2.2) * 0.9))));
+  let h = `<div class="sheet" style="font-size:${fs}px;grid-template-columns:auto repeat(${w}, 0.9em)"><div></div>`;
+  for(let col=w-1; col>=0; col--) h += `<div class="hd q${col % 3}">${ABBR[col] || ''}</div>`;
+  sh.rows.forEach(r => {
+    const base = r.kind === 'carry' ? ' crow' : '';
+    const rs = r.rowS ? ` data-s="${r.rowS}"` : '';
+    const signLine = r.line && !r.lineRange ? ' ln' : '';
+    h += `<div class="sg${base}${signLine}"${r.signS ? ` data-s="${r.signS}"` : rs}>${r.sign}</div>`;
+    for(let col=w-1; col>=0; col--){
+      const c = r.cells[col];
+      let cls = 'cl' + base;
+      if(r.line && (!r.lineRange || (col >= r.lineRange[0] && col <= r.lineRange[1]))) cls += ' ln';
+      if(r.bar) cls += ' bar' + (col === w-1 ? ' barl' : '');
+      if(c && c.cls) cls += ' ' + c.cls;
+      const ds = c && c.s ? ` data-s="${c.s}"` : rs;
+      const dx = c && c.strikeS ? ` data-x="${c.strikeS}"` : '';
+      h += `<div class="${cls}"${ds}${dx}>${c ? c.t : ''}</div>`;
+    }
+  });
+  return h + '</div>';
+}
+function stepsHTML(p){
+  const { blocks, total } = buildSteps(p);
+  return `<div class="steps" data-cur="0" data-total="${total}">` +
+    blocks.map(b => `${b.title ? `<p class="blk-title">${b.title}</p>` : ''}
+      <div class="sheetwrap">${sheetHTML(b.sheet)}</div>
+      <ol class="stxt">${b.steps.map(x => `<li data-s="${x.s}">${x.text}</li>`).join('')}</ol>`).join('') +
+    `<div class="stepctl">
+      <button class="btn line" data-act="sprev" aria-label="Langkah sebelumnya">◀</button>
+      <button class="btn primary" data-act="snext" style="padding:12px">Berikutnya ▶</button>
+      <button class="btn line" data-act="sall">Semua</button>
+    </div>
+    <p class="lbl center" style="font-size:13px;color:var(--muted);font-weight:800;margin:8px 0 0"></p></div>`;
+}
+function applyStep(box, cur){
+  const total = Number(box.dataset.total);
+  cur = Math.max(0, Math.min(total, cur));
+  box.dataset.cur = cur;
+  box.querySelectorAll('[data-s]').forEach(el => el.classList.toggle('hid', Number(el.dataset.s) > cur));
+  box.querySelectorAll('[data-x]').forEach(el => el.classList.toggle('strike', cur >= Number(el.dataset.x)));
+  let now = null;
+  box.querySelectorAll('.stxt li').forEach(li => { const on = Number(li.dataset.s) === cur; li.classList.toggle('now', on); if(on) now = li; });
+  box.querySelector('.lbl').textContent = cur === 0 ? 'Tekan “Berikutnya” untuk mulai' : `Langkah ${cur} dari ${total}`;
+  box.querySelector('[data-act="snext"]').disabled = cur >= total;
+  box.querySelector('[data-act="sprev"]').disabled = cur <= 0;
+  if(now) now.scrollIntoView({block:'nearest', behavior: reduceMotion ? 'auto' : 'smooth'});
+}
+
+/* ---------- Tab 2: Operasi hitung ---------- */
+const mLevel = $('#m-level');
+MATH_LEVELS.forEach(([label, d]) => mLevel.add(new Option(label, d, false, d === 3)));
+for(let i=1;i<=10;i++) $('#m-n').add(new Option(i + ' soal', i, false, i === 3));
+let problems = [];
+/* Buat soal untuk anak-anak di `list`. Soal tidak kembar dengan anak lain (kalau masih ada pilihan). */
+function genMathFor(list, andRender){
+  const op = $('#m-op').value, d = Number(mLevel.value), k = Number($('#m-k').value);
+  const n = Number($('#m-n').value), tierSel = $('#m-tier').value;
+  if(list.length === ids().length) st.sets.math = {};
+  const seen = new Set();
+  Object.values(st.sets.math).forEach(arr => arr.forEach(p => seen.add(p.nums.join(p.op))));
+  list.forEach(id => {
+    const out = [];
+    for(let i=0;i<n;i++){
+      const tier = tierSel === 'auto' ? tierForIndex(i, n) : Number(tierSel);
+      let p;
+      for(let t=0;t<30;t++){ p = makeProblem(op, d, k, tier); if(!seen.has(p.nums.join(op))) break; }
+      seen.add(p.nums.join(op)); out.push(p);
+    }
+    st.sets.math[id] = out;
+  });
+  if(andRender){ save(); renderMath(); }
+}
+function renderMath(){
+  $('#m-help').textContent = HELP[$('#m-op').value];
+  problems = st.sets.math[curId()] || [];
+  $('#m-list').innerHTML = kidHeadHTML('Soal') + problems.map((p, i) => {
+    const expr = p.nums.map(fmt).join(` ${OP_SIGN[p.op]} `) + ' = …';
+    return `<article class="card pop" data-i="${i}">
+      <div class="card-head">
+        <span class="tag">Soal ${i+1}<span class="tier t${p.tier}">${TIER_NAME[p.tier]}</span></span>
+      </div>
+      <div class="expr" style="font-size:${fitSize(expr.length, 54, 18)}px;${expr.length > 30 ? 'white-space:normal' : ''}">${expr}</div>
+      <div class="row" style="justify-content:center">
+        <button class="btn line" data-act="ans">🔑 Lihat jawaban</button>
+        <button class="btn line" data-act="steps">🧮 Langkah pengerjaan</button>
+      </div>
+      <div class="answer" hidden><b>${fmt(p.result)}</b><small>${terbilang(p.result)}</small></div>
+      <div class="stepslot"></div>
+    </article>`;
+  }).join('') + kidNavHTML();
+}
+['#m-op','#m-level','#m-tier','#m-k','#m-n'].forEach(s => $(s).onchange = () => genMathFor(ids(), true));
+$('#m-go').onclick = () => genMathFor(ids(), true);
+$('#m-list').addEventListener('click', e => {
+  const btn = e.target.closest('button[data-act]'); if(!btn) return;
+  const card = btn.closest('article'), p = problems[Number(card.dataset.i)];
+  if(btn.dataset.act === 'steps'){
+    const slot = card.querySelector('.stepslot');
+    if(!slot.firstChild){ slot.innerHTML = stepsHTML(p); applyStep(slot.firstChild, 0); btn.textContent = 'Tutup langkah'; }
+    else { slot.hidden = !slot.hidden; btn.textContent = slot.hidden ? '🧮 Langkah pengerjaan' : 'Tutup langkah'; }
+  }
+  const sbox = btn.closest('.steps');
+  if(sbox){
+    const cur = Number(sbox.dataset.cur);
+    if(btn.dataset.act === 'snext') applyStep(sbox, cur + 1);
+    if(btn.dataset.act === 'sprev') applyStep(sbox, cur - 1);
+    if(btn.dataset.act === 'sall') applyStep(sbox, Number(sbox.dataset.total));
+  }
+  if(btn.dataset.act === 'ans'){
+    const a = card.querySelector('.answer'); a.hidden = !a.hidden;
+    btn.textContent = a.hidden ? '🔑 Lihat jawaban' : 'Sembunyikan jawaban';
+  }
+});
+
+/* ---------- Tab 3: Kuis ---------- */
+const SESSION = 10, UP_AFTER = 3, DOWN_AFTER = 2;
+const lvLabel = t => `Level ${t + 1} (${QUIZ[t].name.toLowerCase()})`;
+const qs = { score:0, streak:0, wrongRun:0, pos:0, correct:0, tier:0, cur:null, answered:false, note:'' };
+function qTier(){ const m = $('#q-mode').value; return m === 'auto' ? qs.tier : Number(m); }
+function updateStats(){
+  $('#q-score').textContent = qs.score;
+  $('#q-streak').textContent = qs.streak;
+  $('#q-pos').textContent = Math.min(qs.pos + 1, SESSION) + '/' + SESSION;
+  $('#q-lv').textContent = (qTier() + 1) + '/' + QUIZ.length;
+  $('#q-bar').style.width = (qs.pos / SESSION * 100) + '%';
+}
+function nextQuiz(){
+  qs.cur = makeQuiz(qTier()); qs.answered = false;
+  const q = qs.cur, s = fmt(q.n);
+  // garis bawah digit yang ditanyakan (hitung posisi dengan titik pemisah)
+  let di = -1, marked = '';
+  for(const ch of s){ if(ch !== '.') di++; marked += (ch !== '.' && di === q.idx) ? `<u>${ch}</u>` : ch; }
+  const question = q.type === 'place'
+    ? `Pada bilangan <span class="qnum" style="font-size:${fitSize(s.length, 40)}px">${marked}</span> angka <span class="qdig">${q.dig}</span> menempati nilai tempat …`
+    : `Pada bilangan <span class="qnum" style="font-size:${fitSize(s.length, 40)}px">${marked}</span> angka <span class="qdig">${q.dig}</span> bernilai …`;
+  $('#q-card').innerHTML = `
+    ${qs.note ? `<div class="levelup">${qs.note}</div>` : ''}
+    <p class="qtext">${question}</p>
+    <div class="opts">${q.options.map(o => `<button data-opt="${o}">${o}</button>`).join('')}</div>
+    <div class="feedback" id="q-fb" hidden aria-live="polite"></div>
+    <button class="btn primary mt" id="q-next" hidden>Soal berikutnya</button>`;
+  qs.note = '';
+  updateStats();
+}
+$('#q-card').addEventListener('click', e => {
+  const opt = e.target.closest('button[data-opt]');
+  if(opt && !qs.answered){
+    qs.answered = true;
+    const q = qs.cur, right = opt.dataset.opt === q.correct;
+    $('#q-card').querySelectorAll('button[data-opt]').forEach(b => {
+      b.disabled = true;
+      if(b.dataset.opt === q.correct) b.classList.add('right');
+      else if(b === opt) b.classList.add('wrong');
+    });
+    const fb = $('#q-fb'); fb.hidden = false;
+    if(right){
+      qs.score += 10; qs.streak++; qs.correct++; qs.wrongRun = 0;
+      fb.className = 'feedback ok'; fb.innerHTML = `Benar! Angka ${q.dig} ${q.type === 'place' ? 'ada di tempat' : 'bernilai'} <b>${q.correct}</b>.`;
+      confetti();
+      if($('#q-mode').value === 'auto' && qs.streak > 0 && qs.streak % UP_AFTER === 0 && qs.tier < QUIZ.length - 1){ qs.tier++; qs.note = `⬆️ Naik ke ${lvLabel(qs.tier)}!`; }
+    } else {
+      qs.streak = 0; qs.wrongRun++;
+      fb.className = 'feedback bad'; fb.innerHTML = `Belum tepat. Angka ${q.dig} ${q.type === 'place' ? 'ada di tempat' : 'bernilai'} <b>${q.correct}</b>.`;
+      if($('#q-mode').value === 'auto' && qs.wrongRun >= DOWN_AFTER && qs.tier > 0){ qs.tier--; qs.wrongRun = 0; qs.note = `Kembali ke ${lvLabel(qs.tier)} dulu, ya.`; }
+    }
+    qs.pos++;
+    updateStats();
+    const nx = $('#q-next'); nx.hidden = false;
+    nx.textContent = qs.pos >= SESSION ? 'Lihat hasil' : 'Soal berikutnya';
+    nx.focus();
+    return;
+  }
+  if(e.target.id === 'q-next'){ qs.pos >= SESSION ? showSummary() : nextQuiz(); }
+  if(e.target.id === 'q-again'){ Object.assign(qs, {score:0, streak:0, wrongRun:0, pos:0, correct:0, note:''}); nextQuiz(); }
+});
+function showSummary(){
+  const pct = qs.correct / SESSION;
+  const msg = pct === 1 ? 'Sempurna! 🌟' : pct >= .7 ? 'Hebat! Sedikit lagi sempurna.' : pct >= .4 ? 'Bagus, terus berlatih!' : 'Yuk ulangi pelan-pelan.';
+  $('#q-card').innerHTML = `<div class="summary center">
+    <p class="tag">Hasil latihan</p>
+    <b class="big">${qs.correct}/${SESSION}</b>
+    <p style="font-weight:800;font-size:18px">${msg}</p>
+    <p style="color:var(--muted)">Skor ${qs.score}, terakhir di ${lvLabel(qTier())}</p>
+    <button class="btn primary" id="q-again">Main lagi</button></div>`;
+  if(pct >= .7) confetti();
+  $('#q-pos').textContent = SESSION + '/' + SESSION;
+}
+$('#q-mode').onchange = () => { if(!qs.answered) nextQuiz(); else updateStats(); };
+
+/* Mulai */
+applySettings(saved && saved.settings);
+(function start(){
+  const all = ids();
+  // buang data anak yang sudah tidak ada
+  ['num','math'].forEach(kind => Object.keys(st.sets[kind]).forEach(id => { if(!all.includes(id)) delete st.sets[kind][id]; }));
+  const needNum = all.filter(id => !Array.isArray(st.sets.num[id]));
+  const needMath = all.filter(id => !Array.isArray(st.sets.math[id]));
+  if(needNum.length) genNumbersFor(needNum, false);
+  if(needMath.length) genMathFor(needMath, false);
+  save(); renderKids(); renderNumbers(); renderMath(); nextQuiz();
+})();
+
+/* ---------- Mode offline (hanya saat dibuka dari alamat web, bukan file) ---------- */
+const APP_VERSION = '2026.09.28-1';
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  navigator.serviceWorker.register('sw.js').then(reg => {
+    const foot = $('#appfoot');
+    const ready = () => foot.textContent = `Versi ${APP_VERSION}, siap dipakai offline`;
+    if(navigator.serviceWorker.controller) ready();
+    else navigator.serviceWorker.addEventListener('controllerchange', ready, { once:true });
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
