@@ -213,6 +213,9 @@ nav.tabs button[aria-selected="true"]{color:var(--ink);border-top-color:var(--in
             <option value="-">Pengurangan (−)</option>
             <option value="x">Perkalian (×)</option>
             <option value=":">Pembagian (:)</option>
+            <option value="rnd">Acak per soal (+ − × :)</option>
+            <option value="pm">Campuran + dan −</option>
+            <option value="md">Campuran dengan × atau :</option>
           </select></label>
         <label class="fld"><span>Tingkat angka</span><select id="m-level"></select></label>
         <label class="fld"><span>Kesulitan</span>
@@ -258,7 +261,7 @@ nav.tabs button[aria-selected="true"]{color:var(--ink);border-top-color:var(--in
     </div>
     <div class="card" id="q-card"></div>
   </section>
-  <p class="appfoot" id="appfoot">Versi 2026.09.28-1</p>
+  <p class="appfoot" id="appfoot">Versi 2026.09.30-1</p>
 </main>
 
 <nav class="tabs" role="tablist">
@@ -522,6 +525,127 @@ function makeProblem(op, d, k, tier){
 }
 function tierForIndex(i, n){ return Math.min(2, Math.floor(i * 3 / n)); }
 
+/* ---- Soal campuran ---- */
+/* Hitung dengan aturan: kali & bagi dulu, lalu tambah & kurang dari kiri.
+   ok = false kalau ada hasil sementara yang negatif (tidak cocok untuk kelas 3). */
+function evalMixed(nums, ops){
+  const n = [nums[0]], o = [];
+  for(let i=0;i<ops.length;i++){
+    const op = ops[i], v = nums[i+1];
+    if(op === 'x' || op === ':'){ const a = n.pop(); n.push(op === 'x' ? a * v : a / v); }
+    else { o.push(op); n.push(v); }
+  }
+  let r = n[0], ok = n.every(v => Number.isInteger(v) && v >= 0);
+  for(let i=0;i<o.length;i++){ r = o[i] === '+' ? r + n[i+1] : r - n[i+1]; if(r < 0) ok = false; }
+  return { result: r, ok };
+}
+/* Jumlah menyimpan + meminjam kalau soal +/− dikerjakan dari kiri */
+function pmEvents(nums, ops){
+  let acc = nums[0], ev = 0;
+  for(let i=0;i<ops.length;i++){
+    const v = nums[i+1];
+    if(ops[i] === '+'){ ev += carriesAdd([acc, v]); acc += v; }
+    else { ev += borrows2(acc, v); acc -= v; }
+  }
+  return ev;
+}
+function randOpsPM(k){                              // selalu ada + dan −
+  return shuffle(['+', '-', ...Array.from({length: k - 3}, () => Math.random() < .5 ? '+' : '-')]);
+}
+/* Mudah untuk +/−: disusun per kolom supaya tidak ada menyimpan/meminjam sama sekali */
+function pmNoEvent(ops, d){
+  const k = ops.length + 1;
+  for(let t=0;t<200;t++){
+    const nums = Array(k).fill(0); let ok = true;
+    for(let col=0; col<d && ok; col++){
+      const lo = (col === d-1) ? 1 : 0;       // kolom paling kiri tidak boleh 0
+      let good = false;
+      for(let tt=0; tt<50 && !good; tt++){
+        let c = R(Math.max(lo, 1), 9); const ds = [c]; good = true;
+        for(const op of ops){
+          const hi = op === '+' ? 9 - c : c;
+          if(hi < lo){ good = false; break; }
+          const v = R(lo, hi); ds.push(v); c = op === '+' ? c + v : c - v;
+        }
+        if(good) ds.forEach((v, i) => nums[i] += v * 10 ** col);
+      }
+      ok = good;
+    }
+    if(ok) return nums;
+  }
+  return null;
+}
+function genPM(k, d, min, max, tier){
+  k = Math.max(3, k);
+  if(tier === 0 && d >= 2){
+    for(let t=0;t<20;t++){ const ops = randOpsPM(k), nums = pmNoEvent(ops, d); if(nums && evalMixed(nums, ops).ok) return { nums, ops }; }
+  }
+  const cand = () => {
+    for(;;){
+      const ops = randOpsPM(k), nums = Array.from({length:k}, () => R(min, max));
+      // angka pertama dibuat cukup besar supaya pengurangan tidak negatif
+      nums[0] = R(Math.max(min, Math.floor(max / 2)), max);
+      if(evalMixed(nums, ops).ok) return { nums, ops };
+    }
+  };
+  const tf = d === 1
+    ? c => { const e = pmEvents(c.nums, c.ops); return e === 0 ? 0 : e === 1 ? 1 : 2; }
+    : c => Math.min(2, pmEvents(c.nums, c.ops));
+  return search(cand, tf, tier, 20000);
+}
+/* Bagian kali/bagi: hasil paling besar 100 (batas perkalian/pembagian kelas 3) */
+function mdPart(tier){
+  const hi = tier === 0 ? 5 : 9;
+  if(Math.random() < .5){ const a = R(2, hi), b = R(2, hi); return { nums:[a, b], op:'x' }; }
+  const b = R(2, hi), q = R(2, tier === 0 ? 5 : 10);
+  return { nums:[b * q, b], op:':' };
+}
+/* Mudah: kali/bagi di depan (P ± c). Menengah: di belakang (c ± P), jadi aturan "kali dulu" benar-benar diuji.
+   Menantang: 4 angka, minimal satu kali/bagi tidak di depan. */
+function genMD(d, min, max, tier){
+  const num = () => R(min, max);
+  for(let t=0;t<500;t++){
+    const pm = () => Math.random() < .5 ? '+' : '-';
+    let items;
+    if(tier === 0) items = [mdPart(0), pm(), num()];
+    else if(tier === 1) items = [num(), pm(), mdPart(1)];
+    else {
+      const form = R(0, 2);
+      items = form === 0 ? [num(), pm(), mdPart(2), pm(), num()]
+            : form === 1 ? [num(), pm(), mdPart(2), pm(), mdPart(2)]
+            :              [mdPart(2), pm(), num(), pm(), mdPart(2)];
+    }
+    // ubah jadi deretan angka dan tanda, sesuai urutan tulisan
+    const seqNums = [], seqOps = [];
+    items.forEach((it, i) => {
+      if(i % 2 === 1) seqOps.push(it);
+      else if(typeof it === 'number') seqNums.push(it);
+      else { seqNums.push(it.nums[0]); seqOps.push(it.op); seqNums.push(it.nums[1]); }
+    });
+    if(evalMixed(seqNums, seqOps).ok) return { nums: seqNums, ops: seqOps };
+    if(t > 300){                                  // angka kecil (satuan): pakai + saja
+      const plus = seqOps.map(o => (o === '-' ? '+' : o));
+      if(evalMixed(seqNums, plus).ok) return { nums: seqNums, ops: plus };
+    }
+  }
+  return { nums:[R(2,5), R(2,5), R(min, max)], ops:['x', '+'] };
+}
+function makeMixed(kind, d, k, tier){
+  const min = d === 1 ? 1 : 10 ** (d-1), max = 10 ** d - 1;
+  const c = kind === 'pm' ? genPM(k, d, min, max, tier) : genMD(d, min, max, tier);
+  return { op: kind, nums: c.nums, ops: c.ops, tier, result: evalMixed(c.nums, c.ops).result };
+}
+const RND_OPS = ['+', '-', 'x', ':'];
+function makeAny(op, d, k, tier){
+  if(op === 'pm' || op === 'md') return makeMixed(op, d, k, tier);
+  if(op === 'rnd') return makeProblem(fromBag('rndop', RND_OPS), d, k, tier);
+  return makeProblem(op, d, k, tier);
+}
+function exprKey(p){
+  return p.ops ? p.nums.map((n, i) => (i ? p.ops[i-1] : '') + n).join('') : p.nums.join(p.op);
+}
+
+
 /* ---- Kuis ---- */
 const QUIZ = [
   { name:'Ratusan',              dMin:3,  dMax:3,  zero:false, valueQ:0   },
@@ -616,7 +740,7 @@ function stepsSub2(a, b, s0){
     const d = da - db;
     const leadingZero = c > 0 && res < 10 ** c;
     if(c < lb || nb) txt += `${da} − ${db} = ${d}`;
-    else txt += `tidak ada yang dikurangi, hasilnya ${d}`;
+    else txt += `${txt.endsWith('. ') ? 'Tidak' : 'tidak'} ada yang dikurangi, hasilnya ${d}`;
     if(leadingZero) txt += ' (angka 0 paling depan tidak ditulis).';
     else { put(out, c, d, s, 'rs'); txt += `. Tulis ${d}.`; }
     steps.push({s, text:txt});
@@ -705,7 +829,31 @@ function stepsDiv(A, b, s0){
   return { sheet:sh, steps, end:s, result:Q };
 }
 
+function buildMixedSteps(p){
+  const blocks = []; let s = 0, stage = 1;
+  const push = (title, b) => { blocks.push({ title, ...b }); s = b.end; };
+  const nums = p.nums.slice(), ops = p.ops.slice();
+  let hadMD = false;
+  for(let i=0; i<ops.length; ){
+    if(ops[i] === 'x' || ops[i] === ':'){
+      const a = nums[i], v = nums[i+1];
+      const b = ops[i] === 'x' ? (v >= 10 ? stepsMul2(a, v, s) : stepsMul1(a, v, s)) : stepsDiv(a, v, s);
+      push(`Tahap ${stage++}: ${ops[i] === 'x' ? 'kali' : 'bagi'} dulu, ${fmt(a)} ${STEP_SIGN[ops[i]]} ${fmt(v)}`, b);
+      nums.splice(i, 2, b.result); ops.splice(i, 1); hadMD = true;
+    } else i++;
+  }
+  let acc = nums[0];
+  for(let j=0; j<ops.length; j++){
+    const v = nums[j+1];
+    const b = ops[j] === '+' ? stepsAdd([acc, v], s) : stepsSub2(acc, v, s);
+    const hint = j === 0 ? (hadMD ? ' (lalu tambah/kurang dari kiri)' : ' (kerjakan dari kiri)') : '';
+    push(`Tahap ${stage++}: ${fmt(acc)} ${STEP_SIGN[ops[j]]} ${fmt(v)}${hint}`, b);
+    acc = b.result;
+  }
+  return { blocks, total: s };
+}
 function buildSteps(p){
+  if(p.ops) return buildMixedSteps(p);
   const blocks = []; let s = 0;
   const push = (title, b) => { blocks.push({ title, ...b }); s = b.end; };
   if(p.op === '+') push(null, stepsAdd(p.nums, 0));
@@ -741,8 +889,15 @@ const HELP = {
   '+':'Mudah: tanpa menyimpan. Menengah: menyimpan 1 kali. Menantang: menyimpan 2 kali atau lebih.',
   '-':'Mudah: tanpa meminjam. Menengah: meminjam 1 kali. Menantang: meminjam 2 kali atau lebih (khusus puluhan: meminjam dengan hasil di bawah 20). Hasil tidak pernah negatif.',
   'x':'Tingkat angka berlaku untuk angka pertama. Mudah: dikali 2–5 tanpa menyimpan. Menengah: dikali 2–9, menyimpan 1 kali. Menantang: dikali bilangan 2 angka (11–99).',
-  ':':'Tingkat angka berlaku untuk angka yang dibagi. Selalu habis dibagi. Mudah: dibagi 2–5, tiap langkah habis. Menengah: dibagi 6–9. Menantang: dibagi bilangan 2 angka.'
+  ':':'Tingkat angka berlaku untuk angka yang dibagi. Selalu habis dibagi. Mudah: dibagi 2–5, tiap langkah habis. Menengah: dibagi 6–9. Menantang: dibagi bilangan 2 angka.',
+  'rnd':'Tiap soal berbeda operasinya (+, −, ×, :), bergiliran merata. Aturan kesulitan sama seperti operasi masing-masing.',
+  'pm':'Satu soal berisi + dan −, dikerjakan dari kiri. Minimal 3 angka. Mudah: tanpa menyimpan/meminjam. Menengah: 1 kali. Menantang: 2 kali atau lebih. Hasil sementara tidak pernah negatif.',
+  'md':'Kali/bagi dikerjakan dulu, lalu tambah/kurang dari kiri. Bagian kali/bagi hasilnya paling besar 100; tingkat angka berlaku untuk angka yang ditambah/dikurang. Mudah: kali/bagi di depan. Menengah: kali/bagi di belakang. Menantang: 4–5 angka. “Banyak angka” tidak dipakai.'
 };
+function exprText(p){
+  return p.ops ? p.nums.map((n, i) => (i ? ` ${OP_SIGN[p.ops[i-1]]} ` : '') + fmt(n)).join('')
+               : p.nums.map(fmt).join(` ${OP_SIGN[p.op]} `);
+}
 
 function fitSize(len, maxPx, minPx = 26){ return Math.max(minPx, Math.min(maxPx, Math.floor(Math.min(window.innerWidth - 72, 640) / (len * 0.66)))); }
 function numHTML(n){
@@ -1028,14 +1183,14 @@ function genMathFor(list, andRender){
   const n = Number($('#m-n').value), tierSel = $('#m-tier').value;
   if(list.length === ids().length) st.sets.math = {};
   const seen = new Set();
-  Object.values(st.sets.math).forEach(arr => arr.forEach(p => seen.add(p.nums.join(p.op))));
+  Object.values(st.sets.math).forEach(arr => arr.forEach(p => seen.add(exprKey(p))));
   list.forEach(id => {
     const out = [];
     for(let i=0;i<n;i++){
       const tier = tierSel === 'auto' ? tierForIndex(i, n) : Number(tierSel);
       let p;
-      for(let t=0;t<30;t++){ p = makeProblem(op, d, k, tier); if(!seen.has(p.nums.join(op))) break; }
-      seen.add(p.nums.join(op)); out.push(p);
+      for(let t=0;t<30;t++){ p = makeAny(op, d, k, tier); if(!seen.has(exprKey(p))) break; }
+      seen.add(exprKey(p)); out.push(p);
     }
     st.sets.math[id] = out;
   });
@@ -1043,9 +1198,10 @@ function genMathFor(list, andRender){
 }
 function renderMath(){
   $('#m-help').textContent = HELP[$('#m-op').value];
+  $('#m-k').disabled = $('#m-op').value === 'md';
   problems = st.sets.math[curId()] || [];
   $('#m-list').innerHTML = kidHeadHTML('Soal') + problems.map((p, i) => {
-    const expr = p.nums.map(fmt).join(` ${OP_SIGN[p.op]} `) + ' = …';
+    const expr = exprText(p) + ' = …';
     return `<article class="card pop" data-i="${i}">
       <div class="card-head">
         <span class="tag">Soal ${i+1}<span class="tier t${p.tier}">${TIER_NAME[p.tier]}</span></span>
@@ -1172,7 +1328,7 @@ applySettings(saved && saved.settings);
 })();
 
 /* ---------- Mode offline (hanya saat dibuka dari alamat web, bukan file) ---------- */
-const APP_VERSION = '2026.09.28-1';
+const APP_VERSION = '2026.09.30-1';
 if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
   navigator.serviceWorker.register('sw.js').then(reg => {
     const foot = $('#appfoot');

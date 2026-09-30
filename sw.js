@@ -2,7 +2,7 @@
    Halaman: ambil versi terbaru dari internet dulu (maks 4 detik), kalau gagal pakai simpanan.
    Ikon & manifest: pakai simpanan dulu.
    Setiap mengubah aplikasi, naikkan VERSION supaya simpanan lama dibersihkan. */
-const VERSION = '2026.09.28-1';
+const VERSION = '2026.09.30-1';
 const CACHE = 'nilai-tempat-' + VERSION;
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
